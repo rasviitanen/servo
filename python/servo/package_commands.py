@@ -34,6 +34,7 @@ sys.path.append(path.join(path.dirname(__file__), "..", "..",
 from servo.command_base import (
     archive_deterministically,
     BuildNotFound,
+    check_call,
     cd,
     CommandBase,
     is_macosx,
@@ -66,6 +67,9 @@ PACKAGES = {
     'windows-msvc': [
         r'target\release\msi\Servo.exe',
         r'target\release\msi\Servo.zip',
+    ],
+    'uwp': [
+        r'support\hololens\AppPackages\ServoApp\ServoApp_1.0.0.0_Test\ServoApp_1.0.0.0_x64_arm64.appxbundle',
     ],
 }
 
@@ -202,8 +206,12 @@ class PackageCommands(CommandBase):
                      default=None,
                      action='store_true',
                      help='Create a local Maven repository')
+    @CommandArgument('--uwp',
+                     default=None,
+                     action='append',
+                     help='Create an APPX package')
     def package(self, release=False, dev=False, android=None, magicleap=None, debug=False,
-                debugger=None, target=None, flavor=None, maven=False):
+                debugger=None, target=None, flavor=None, maven=False, uwp=None):
         if android is None:
             android = self.config["build"]["android"]
         if target and android:
@@ -219,10 +227,13 @@ class PackageCommands(CommandBase):
         if magicleap:
             target = "aarch64-linux-android"
         env = self.build_env(target=target)
-        binary_path = self.get_binary_path(release, dev, target=target, android=android, magicleap=magicleap)
+        binary_path = self.get_binary_path(release, dev, target=target, android=android, magicleap=magicleap, simpleservo=uwp is not None)
         dir_to_root = self.get_top_dir()
         target_dir = path.dirname(binary_path)
-        if magicleap:
+        if uwp:
+            vs_info = self.vs_dirs()
+            build_uwp(uwp, dev, vs_info['msbuild'])
+        elif magicleap:
             if platform.system() not in ["Darwin"]:
                 raise Exception("Magic Leap builds are only supported on macOS.")
             if not env.get("MAGICLEAP_SDK"):
@@ -724,3 +735,32 @@ class PackageCommands(CommandBase):
             update_brew(packages[0], timestamp)
 
         return 0
+
+
+def build_uwp(platforms, dev, msbuild_dir):
+    if any(map(lambda p: p not in ['x64', 'x86', 'arm64'], platforms)):
+        raise Exception("Unsupported appx platforms: " + str(platforms))
+    if dev and len(platforms) > 1:
+        raise Exception("Debug package with multiple architectures is unsupported")
+
+    platforms = '|'.join(platforms)
+
+    if dev:
+        Configuration = "Debug"
+    else:
+        Configuration = "Release"
+
+    # execute msbuild
+    # Note: /m implies to use as many CPU cores as possible while building.
+    # msbuild /m /p:project=ServoApp .\support\hololens\servoapp.sln
+    # /p:Configuration="Debug" /p:Platform="x64" /property:AppxBundle=Always;AppxBundlePlatforms="x64"
+    msbuild = path.join(msbuild_dir, "msbuild.exe")
+    project = path.join('.', 'support', 'hololens', 'ServoApp.sln')
+    subprocess.check_call([
+        msbuild,
+        "/m",
+        "/p:project=ServoApp",
+        project,
+        "/p:Configuration=" + Configuration,
+        '/p:AppxBundle=Always;AppxBundlePlatforms=%s' % platforms,
+    ])

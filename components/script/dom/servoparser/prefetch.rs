@@ -10,10 +10,12 @@ use crate::dom::htmlscriptelement::script_fetch_request;
 use crate::stylesheet_loader::stylesheet_fetch_request;
 use html5ever::buffer_queue::BufferQueue;
 use html5ever::tokenizer::Tag;
+use html5ever::tokenizer::TagKind;
 use html5ever::tokenizer::Token;
 use html5ever::tokenizer::TokenSink;
 use html5ever::tokenizer::TokenSinkResult;
 use html5ever::tokenizer::Tokenizer as HtmlTokenizer;
+use html5ever::tokenizer::TokenizerResult;
 use html5ever::Attribute;
 use html5ever::LocalName;
 use js::jsapi::JSTracer;
@@ -61,8 +63,8 @@ impl Tokenizer {
         Tokenizer { inner }
     }
 
-    pub fn feed(&mut self, input: &mut BufferQueue) {
-        let _ = self.inner.feed(input);
+    pub fn feed(&mut self, input: &mut BufferQueue) -> TokenizerResult<()> {
+        self.inner.feed(input)
     }
 }
 
@@ -81,8 +83,8 @@ impl TokenSink for PrefetchSink {
     type Handle = ();
     fn process_token(&mut self, token: Token, _line_number: u64) -> TokenSinkResult<()> {
         if let Token::TagToken(ref tag) = token {
-            match tag.name {
-                local_name!("script") if self.prefetching => {
+            match (tag.kind, &tag.name) {
+                (TagKind::StartTag, local_name!("script")) if self.prefetching => {
                     if let Some(url) = self.get_url(tag, local_name!("src")) {
                         debug!("Prefetch script {}", url);
                         let cors_setting = self.get_cors_settings(tag, local_name!("crossorigin"));
@@ -103,8 +105,10 @@ impl TokenSink for PrefetchSink {
                             .resource_threads
                             .send(CoreResourceMsg::Fetch(request, FetchChannels::Prefetch));
                     }
+                    // Don't prefetch inside script
+                    self.prefetching = false;
                 },
-                local_name!("img") if self.prefetching => {
+                (TagKind::StartTag, local_name!("img")) if self.prefetching => {
                     if let Some(url) = self.get_url(tag, local_name!("src")) {
                         debug!("Prefetch {} {}", tag.name, url);
                         let request =
@@ -114,7 +118,7 @@ impl TokenSink for PrefetchSink {
                             .send(CoreResourceMsg::Fetch(request, FetchChannels::Prefetch));
                     }
                 },
-                local_name!("link") if self.prefetching => {
+                (TagKind::StartTag, local_name!("link")) if self.prefetching => {
                     if let Some(rel) = self.get_attr(tag, local_name!("rel")) {
                         if rel.value.eq_ignore_ascii_case("stylesheet") {
                             if let Some(url) = self.get_url(tag, local_name!("href")) {
@@ -141,11 +145,11 @@ impl TokenSink for PrefetchSink {
                         }
                     }
                 },
-                local_name!("script") => {
+                (TagKind::EndTag, local_name!("script")) => {
                     // After the first script tag, the main parser is blocked, so it's worth prefetching.
                     self.prefetching = true;
                 },
-                local_name!("base") => {
+                (TagKind::StartTag, local_name!("base")) => {
                     if let Some(url) = self.get_url(tag, local_name!("href")) {
                         debug!("Setting base {}", url);
                         self.base = url;

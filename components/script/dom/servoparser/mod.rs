@@ -449,7 +449,7 @@ impl ServoParser {
                 // have been wasted, but in most cases it won't.
                 let mut prefetch_input = self.prefetch_input.borrow_mut();
                 prefetch_input.push_back(chunk.clone());
-                self.prefetch_tokenizer
+                let _ = self.prefetch_tokenizer
                     .borrow_mut()
                     .feed(&mut *prefetch_input);
             }

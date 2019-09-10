@@ -1951,7 +1951,15 @@ impl ScriptThread {
 
         let window = self.documents.borrow().find_window(pipeline_id);
         let window = match window {
-            Some(w) => w,
+            Some(w) => {
+                if w.Closed() {
+                    return warn!(
+                        "Received fire timer msg for a discarded browsing context whose pipeline is pending exit {}.",
+                        pipeline_id
+                    );
+                }
+                w
+            },
             None => {
                 return warn!(
                     "Received fire timer msg for a closed pipeline {}.",
@@ -2826,7 +2834,7 @@ impl ScriptThread {
             // to avoid running layout on detached iframes.
             let window = document.window();
             if discard_bc == DiscardBrowsingContext::Yes {
-                window.window_proxy().discard_browsing_context();
+                window.discard_browsing_context();
             }
             window.clear_js_runtime();
         }

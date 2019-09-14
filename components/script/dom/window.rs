@@ -39,6 +39,7 @@ use crate::dom::eventtarget::EventTarget;
 use crate::dom::globalscope::GlobalScope;
 use crate::dom::hashchangeevent::HashChangeEvent;
 use crate::dom::history::History;
+use crate::dom::idbfactory::IDBFactory;
 use crate::dom::location::Location;
 use crate::dom::mediaquerylist::{MediaQueryList, MediaQueryListMatchState};
 use crate::dom::mediaquerylistevent::MediaQueryListEvent;
@@ -749,6 +750,10 @@ impl WindowMethods for Window {
         self.document
             .get()
             .expect("Document accessed before initialization.")
+    }
+
+    fn IndexedDB(&self) -> DomRoot<IDBFactory> {
+        unimplemented!();
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-history

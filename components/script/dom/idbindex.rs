@@ -5,7 +5,7 @@ use crate::dom::bindings::error::{Error, ErrorResult};
 use crate::dom::bindings::inheritance::Castable;
 use crate::dom::bindings::refcounted::Trusted;
 use crate::dom::bindings::reflector::{reflect_dom_object, DomObject, Reflector};
-use crate::dom::bindings::root::{Dom, MutDom, DomRoot};
+use crate::dom::bindings::root::{Dom, DomRoot, MutDom};
 use crate::dom::bindings::str::DOMString;
 use crate::dom::event::{Event, EventBubbles, EventCancelable};
 use crate::dom::window::Window;
@@ -16,9 +16,9 @@ use crate::dom::idbrequest::IDBRequest;
 use dom_struct::dom_struct;
 
 use crate::script_runtime::JSContext as SafeJSContext;
-use js::rust::HandleValue;
-use js::jsval::JSVal;
 use js::jsapi::Heap;
+use js::jsval::JSVal;
+use js::rust::HandleValue;
 
 #[dom_struct]
 pub struct IDBIndex {
@@ -99,23 +99,22 @@ impl IDBIndexMethods for IDBIndex {
     }
 
     fn Name(&self) -> DOMString {
-        unimplemented!();    
+        unimplemented!();
     }
 
     fn SetName(&self, value: DOMString) {
-        unimplemented!();    
+        unimplemented!();
     }
 
     fn KeyPath(&self, cx: SafeJSContext) -> JSVal {
         unimplemented!();
     }
-    
+
     fn MultiEntry(&self) -> bool {
         unimplemented!();
     }
-    
+
     fn Unique(&self) -> bool {
         unimplemented!();
     }
-
 }

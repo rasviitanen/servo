@@ -2,17 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/*
-  TODO Spec says: partial interface mixin WindowOrWorkerGlobalScope
-  Do we need `mixin` here?
-*/
-partial interface WindowOrWorkerGlobalScope {
+partial interface mixin WindowOrWorkerGlobalScope {
   [SameObject] readonly attribute IDBFactory indexedDB;
 };
 
-[Exposed=(Window,Worker)]
+[Pref="dom.indexeddb.enabled", Exposed=(Window,Worker)]
 interface IDBFactory {
-  [NewObject] IDBOpenDBRequest open(DOMString name,
+  [NewObject, Throws] IDBOpenDBRequest open(DOMString name,
                                     optional [EnforceRange] unsigned long long version);
   [NewObject] IDBOpenDBRequest deleteDatabase(DOMString name);
 

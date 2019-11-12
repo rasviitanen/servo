@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-[Exposed=(Window,Worker)]
+[Pref="dom.indexeddb.enabled", Exposed=(Window,Worker)]
 interface IDBTransaction : EventTarget {
   readonly attribute DOMStringList objectStoreNames;
   readonly attribute IDBTransactionMode mode;
@@ -10,8 +10,8 @@ interface IDBTransaction : EventTarget {
   readonly attribute DOMException error;
 
   IDBObjectStore objectStore(DOMString name);
-  void commit();
-  void abort();
+  [Throws] void commit();
+  [Throws] void abort();
 
   // Event handlers:
   attribute EventHandler onabort;

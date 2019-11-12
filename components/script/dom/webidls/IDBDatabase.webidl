@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-[Exposed=(Window,Worker)]
+[Pref="dom.indexeddb.enabled", Exposed=(Window,Worker)]
 interface IDBDatabase : EventTarget {
   readonly attribute DOMString name;
   readonly attribute unsigned long long version;
@@ -12,7 +12,7 @@ interface IDBDatabase : EventTarget {
                                          optional IDBTransactionMode mode = "readonly");
   void close();
 
-  [NewObject] IDBObjectStore createObjectStore(
+  [Throws, NewObject] IDBObjectStore createObjectStore(
     DOMString name,
     optional IDBObjectStoreParameters options = {});
   void deleteObjectStore(DOMString name);

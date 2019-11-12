@@ -5,23 +5,23 @@ use crate::dom::bindings::codegen::UnionTypes::IDBObjectStoreOrIDBIndex;
 use crate::dom::bindings::error::{Error, ErrorResult};
 use crate::dom::bindings::inheritance::Castable;
 use crate::dom::bindings::refcounted::Trusted;
-use crate::dom::bindings::trace::JSTraceable;
 use crate::dom::bindings::reflector::{reflect_dom_object, DomObject, Reflector};
 use crate::dom::bindings::root::{Dom, DomRoot, MutDom};
 use crate::dom::bindings::str::DOMString;
+use crate::dom::bindings::trace::JSTraceable;
 use crate::dom::event::{Event, EventBubbles, EventCancelable};
 use crate::dom::window::Window;
 use js::jsapi::Heap;
 
 use dom_struct::dom_struct;
 
+use crate::dom::idbindex::IDBIndex;
 use crate::dom::idbobjectstore::IDBObjectStore;
 use crate::dom::idbrequest::IDBRequest;
-use crate::dom::idbindex::IDBIndex;
 
 use crate::script_runtime::JSContext as SafeJSContext;
-use js::rust::HandleValue;
 use js::jsval::JSVal;
+use js::rust::HandleValue;
 
 #[must_root]
 #[derive(JSTraceable, MallocSizeOf)]
@@ -90,13 +90,12 @@ impl IDBCursorMethods for IDBCursor {
     fn Direction(&self) -> IDBCursorDirection {
         unimplemented!();
     }
-    
+
     fn Key(&self, cx: SafeJSContext) -> JSVal {
         unimplemented!();
     }
-    
+
     fn PrimaryKey(&self, cx: SafeJSContext) -> JSVal {
         unimplemented!();
     }
-    
 }

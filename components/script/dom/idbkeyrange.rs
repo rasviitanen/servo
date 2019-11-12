@@ -4,7 +4,7 @@ use crate::dom::bindings::error::{Error, ErrorResult};
 use crate::dom::bindings::inheritance::Castable;
 use crate::dom::bindings::refcounted::Trusted;
 use crate::dom::bindings::reflector::{reflect_dom_object, DomObject, Reflector};
-use crate::dom::bindings::root::{MutDom, DomRoot};
+use crate::dom::bindings::root::{DomRoot, MutDom};
 use crate::dom::bindings::str::DOMString;
 use crate::dom::event::{Event, EventBubbles, EventCancelable};
 use crate::dom::globalscope::GlobalScope;
@@ -13,9 +13,9 @@ use crate::dom::window::Window;
 use dom_struct::dom_struct;
 
 use crate::script_runtime::JSContext as SafeJSContext;
-use js::rust::HandleValue;
-use js::jsval::JSVal;
 use js::jsapi::Heap;
+use js::jsval::JSVal;
+use js::rust::HandleValue;
 
 #[dom_struct]
 pub struct IDBKeyRange {
@@ -41,15 +41,29 @@ impl IDBKeyRange {
         )
     }
 
-    pub fn Only(cx: SafeJSContext, global: &DomRoot<GlobalScope>, value: HandleValue) -> DomRoot<IDBKeyRange> {
+    pub fn Only(
+        cx: SafeJSContext,
+        global: &DomRoot<GlobalScope>,
+        value: HandleValue,
+    ) -> DomRoot<IDBKeyRange> {
         unimplemented!();
     }
 
-    pub fn LowerBound(cx: SafeJSContext, global: &DomRoot<GlobalScope>, lower: HandleValue, open: bool) -> DomRoot<IDBKeyRange> {
+    pub fn LowerBound(
+        cx: SafeJSContext,
+        global: &DomRoot<GlobalScope>,
+        lower: HandleValue,
+        open: bool,
+    ) -> DomRoot<IDBKeyRange> {
         unimplemented!();
     }
 
-    pub fn UpperBound(cx: SafeJSContext, global: &DomRoot<GlobalScope>, upper: HandleValue, open: bool) -> DomRoot<IDBKeyRange> {
+    pub fn UpperBound(
+        cx: SafeJSContext,
+        global: &DomRoot<GlobalScope>,
+        upper: HandleValue,
+        open: bool,
+    ) -> DomRoot<IDBKeyRange> {
         unimplemented!();
     }
 
@@ -81,13 +95,12 @@ impl IDBKeyRangeMethods for IDBKeyRange {
     fn LowerOpen(&self) -> bool {
         unimplemented!();
     }
-    
+
     fn UpperOpen(&self) -> bool {
-        unimplemented!();    
+        unimplemented!();
     }
-    
+
     fn Includes(&self, cx: SafeJSContext, key: HandleValue) -> bool {
-        unimplemented!();    
+        unimplemented!();
     }
-    
 }

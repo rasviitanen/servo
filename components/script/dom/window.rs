@@ -189,6 +189,7 @@ pub struct Window {
     document: MutNullableDom<Document>,
     location: MutNullableDom<Location>,
     history: MutNullableDom<History>,
+    indexeddb: MutNullableDom<IDBFactory>,
     custom_element_registry: MutNullableDom<CustomElementRegistry>,
     performance: MutNullableDom<Performance>,
     navigation_start: Cell<u64>,
@@ -753,7 +754,7 @@ impl WindowMethods for Window {
     }
 
     fn IndexedDB(&self) -> DomRoot<IDBFactory> {
-        unimplemented!();
+        self.indexeddb.or_init(|| IDBFactory::new(self))
     }
 
     // https://html.spec.whatwg.org/multipage/#dom-history
@@ -2262,6 +2263,7 @@ impl Window {
             navigator: Default::default(),
             location: Default::default(),
             history: Default::default(),
+            indexeddb: Default::default(),
             custom_element_registry: Default::default(),
             window_proxy: Default::default(),
             document: Default::default(),

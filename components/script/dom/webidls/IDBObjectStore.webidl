@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-[Exposed=(Window,Worker)]
+[Pref="dom.indexeddb.enabled", Exposed=(Window,Worker)]
 interface IDBObjectStore {
   attribute DOMString name;
   readonly attribute any keyPath;
@@ -10,8 +10,8 @@ interface IDBObjectStore {
   [SameObject] readonly attribute IDBTransaction transaction;
   readonly attribute boolean autoIncrement;
 
-  [NewObject] IDBRequest put(any value, optional any key);
-  [NewObject] IDBRequest add(any value, optional any key);
+  [NewObject, Throws] IDBRequest put(any value, optional any key);
+  [NewObject, Throws] IDBRequest add(any value, optional any key);
   [NewObject] IDBRequest delete(any query);
   [NewObject] IDBRequest clear();
   [NewObject] IDBRequest get(any query);
